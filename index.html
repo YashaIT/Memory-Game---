@@ -160,11 +160,13 @@
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            word-break: break-word;
+            word-break: keep-all;
+            overflow-wrap: break-word;
             white-space: normal;
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            
         }
 
         .btn:hover {
@@ -174,6 +176,11 @@
 
         .stats {
             display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            text-align: center;
+            max-width: 100%;
             gap: 2rem;
             margin: 1rem 0;
             background: rgba(255, 255, 255, 0.1);
@@ -193,6 +200,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: #ffeb3b;
+            justify-content: center;
         }
 
         .stat-label {
@@ -365,40 +373,33 @@
 
         // Персонажи (эмодзи для простоты)
         const characters = [
-            'https://i.ibb.co/WvXTqxPw/IMG-5907.png',
-            'https://i.ibb.co/DDhBKfsX/IMG-5906.png',
-            'https://i.ibb.co/wNrNC9Fp/IMG-5905.png',
-            'https://i.ibb.co/TMKmD6ZM/IMG-5904.png',
-            'https://i.ibb.co/1tH0pVx9/IMG-5903.png',
-            'https://i.ibb.co/fV7SwpDH/IMG-5902.png',
-            'https://i.ibb.co/27wPPbsb/IMG-5901.png',
-            'https://i.ibb.co/0yjpz4Nc/IMG-5899.png',
-            'https://i.ibb.co/GQ8cz7CM/IMG-5900.png'];
+            'https://i.ibb.co/pvkRkD4g/IMG-5899.png',
+            'https://i.ibb.co/7dygrLCM/IMG-5900.png',
+            'https://i.ibb.co/67MkBxsP/IMG-5901.png',
+            'https://i.ibb.co/Z17GwrxH/IMG-5902.png',
+            'https://i.ibb.co/7dHzHcFS/IMG-5903.png',
+            'https://i.ibb.co/spJhcF8j/IMG-5904.png',
+            'https://i.ibb.co/MycQgjqV/IMG-5905.png',
+            'https://i.ibb.co/mChPVNwL/IMG-5906.png',
+            'https://i.ibb.co/bjsZ5N8T/IMG-5907.png'];
 
         // Конфигурация уровней
         const levelConfig = {
             1: { pairs: 2, gridClass: 'grid-2' },
             2: { pairs: 3, gridClass: 'grid-3' },
             3: { pairs: 4, gridClass: 'grid-4' },
-            4: { pairs: 6, gridClass: 'grid-4' },
-            5: { pairs: 8, gridClass: 'grid-4' },
-            6: { pairs: 9, gridClass: 'grid-3' },
-            7: { pairs: 10, gridClass: 'grid-4' },
-            8: { pairs: 12, gridClass: 'grid-4' },
-            9: { pairs: 15, gridClass: 'grid-5' },
-            10: { pairs: 18, gridClass: 'grid-6' }
+            4: { pairs: 5, gridClass: 'grid-3' },
+            5: { pairs: 6, gridClass: 'grid-4' },
+            6: { pairs: 7, gridClass: 'grid-4' },
+            7: { pairs: 8, gridClass: 'grid-4' },
+            8: { pairs: 9, gridClass: 'grid-4' },
+           
         };
 
         function getLevelConfig(level) {
-            const baseConfig = levelConfig[Math.min(level, 10)];
-            if (level > 10) {
-                const extraPairs = Math.floor((level - 10) / 5);
-                return {
-                    pairs: Math.min(baseConfig.pairs + extraPairs, 16),
-                    gridClass: baseConfig.pairs + extraPairs > 12 ? 'grid-6' : baseConfig.gridClass
-                };
-            }
-            return baseConfig;
+    const maxLevel = 8;
+    const baseLevel = Math.min(level, maxLevel);
+    return levelConfig[baseLevel];
         }
 
         function startGame() {
