@@ -151,6 +151,10 @@
         }
 
         .btn {
+            display: block;
+            margin: 1rem auto;
+            max-width: 90vw;
+            width: fit-content;
             padding: 0.6rem 1rem;
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             color: white;
@@ -330,7 +334,7 @@
         
         <div class="game-info">
             <div class="level-display">
-                Уровень <span id="level">1</span> из 50
+                Уровень <span id="level">1</span> из 8
             </div>
             <p>Найдите одинаковые пары персонажей!</p>
         </div>
@@ -509,8 +513,10 @@
             renderCards();
             updateDisplay();
         }
+        let levelPassed = false;
 
         function levelComplete() {
+            
             gameActive = false;
             clearInterval(timer);
             
@@ -518,13 +524,10 @@
             score += bonusScore;
             
             showCelebration();
+            updateDisplay();
+            levelPassed = true;
             
-            if (currentLevel < 50) {
-                setTimeout(() => {
-                    currentLevel++;
-                    updateDisplay();
-                }, 2000);
-            }
+            
         }
 
         function showCelebration() {
@@ -561,9 +564,15 @@
         }
 
         function nextLevel() {
-            if (currentLevel < 50) {
-                currentLevel++;
+            if (!levelPassed) {
+                alert("Сначала пройди уровень!");
+                return;
+    }
+            if (currentLevel < 8) {
+               currentLevel++;
+               levelPassed = false;
                 updateDisplay();
+                startGame();
             }
         }
 
