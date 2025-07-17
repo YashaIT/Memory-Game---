@@ -170,7 +170,7 @@
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            
+            hyphens: auto;
         }
 
         .btn:hover {
@@ -294,8 +294,15 @@
     }
 
     .btn {
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
+        display: block;
+        margin: 1rem auto;
+        width: 100%; /* Кнопки во всю ширину контейнера */
+        max-width: 250px; /* Ограничение по ширине */
+        padding: 0.7rem 1rem;
+        font-size: 1rem;
+        border-radius: 20px;
+        box-sizing: border-box;
+        text-align: center;
     }
 
     .level-display {
@@ -314,14 +321,6 @@
         margin: 0.5rem auto;
         max-width: 90%;
         width: 100%;
-    }
-
-    .btn {
-        width: 100%; /* Кнопки во всю ширину контейнера */
-        max-width: 250px; /* Ограничение по ширине */
-        padding: 0.7rem 1rem;
-        font-size: 1rem;
-        border-radius: 20px;
     }
 
 }
