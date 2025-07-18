@@ -172,7 +172,6 @@
             box-sizing: border-box;
         }
 
-
         .btn {
             display: inline-flex;
             align-items: center;
@@ -189,14 +188,22 @@
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            min-width: 120px;
+            min-width: 140px; /* Увеличена минимальная ширина */
             max-width: 100%;
             box-sizing: border-box;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            overflow: visible; /* Изменено с hidden на visible */
+            text-overflow: clip; /* Изменено с ellipsis на clip */
             flex-shrink: 0;
+            line-height: 1.2; /* Добавлено для лучшего отображения текста */
         }
+
+        .btn-prev-level {
+            min-width: 160px; /* Еще больше места для текста */
+            padding: 0.6rem 0.8rem; /* Оптимальные отступы */
+        }
+
+
 
         .btn:hover {
             transform: translateY(-2px);
@@ -298,8 +305,12 @@
             .btn {
                 font-size: 0.85rem;
                 padding: 0.5rem 0.8rem;
-                min-width: 100px;
+                min-width: 130px;
             }
+            .btn-prev-level {
+                min-width: 140px;
+            }
+        }
             .message-box {
                 padding: 1.2rem;
             }
@@ -309,7 +320,7 @@
             .message-box p {
                 font-size: 1rem;
             }
-        }
+        
 
         @media (max-width: 480px) {
             .game-board {
@@ -331,10 +342,14 @@
             }
             .btn {
                 width: 100%;
-                max-width: 200px;
-                font-size: 0.8rem;
+                max-width: 220px;
+                font-size: 0.85rem;
+            }
+            .btn-prev-level {
+                min-width: 100%;
             }
         }
+        
             .message-box {
                 padding: 1rem;
                 width: 95vw;
@@ -365,9 +380,14 @@
                 min-height: 45px;
             }
             .btn {
+                font-size: 0.8rem;
+                min-width: 120px;
+                padding: 0.5rem 0.7rem;
+            }
+            .btn-prev-level {
                 font-size: 0.75rem;
-                min-width: 90px;
-                padding: 0.4rem 0.7rem;
+                min-width: 100%;
+            }
             }
             .message-box {
                 padding: 0.8rem;
@@ -378,7 +398,7 @@
             .message-box p {
                 font-size: 0.85rem;
             }
-        }
+        
     </style>
 </head>
 <body>
@@ -399,11 +419,10 @@
             
         </div>
 
-        <div class="controls">
+         <div class="controls">
             <button class="btn" onclick="startGame()">Начать игру</button>
             <button class="btn" onclick="previousLevel()">Предыдущий уровень</button>
             <button class="btn" onclick="restartLevel()">Заново</button>
-            <button class="btn" onclick="nextLevel()">Следующий уровень</button>
         </div>
 
         <div id="gameBoard" class="game-board"></div>
@@ -732,11 +751,33 @@
             showMessage(
                 '🎉 Уровень пройден!', 
                 `Поздравляем! Вы прошли уровень ${currentLevel}!`, 
-                'OK', 
-                'saveProgress'
+                'ДАЛЬШЕ', 
+                'goToNextLevel' // Изменено с saveProgress на goToNextLevel
             );
             
-            saveProgress();
+            goToNextLevel();
+        }
+
+        function goToNextLevel() {
+            if (currentLevel < 20) {
+                currentLevel++;
+                levelPassed = false;
+                timeElapsed = 0;
+                cards = [];
+                flippedCards = [];
+                matchedPairs = 0;
+                saveProgress();
+                updateDisplay();
+                startGame();
+                renderCards();
+            } else {
+                showMessage(
+                    '🎉 Победа!', 
+                    'Вы прошли все 20 уровней! Поздравляем с победой!', 
+                    'Ура!', 
+                    ''
+                );
+            }
         }
 
         function restartLevel() {
