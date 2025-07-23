@@ -1,12 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Seymour+One&display=swap" rel="stylesheet" />
-    <title>Memory Game - Игра на память</title>
+    <title>Найди пары Лабубу</title>
 
     <!-- Yandex Games SDK -->
 <script>
@@ -17,6 +18,58 @@
         s.onload = initSDK;
         d.body.append(s);
     })(document);
+
+    YaGames.init().then(ysdk => {
+    const lang = ysdk.environment.i18n.lang; // например, "ru", "en", "tr" и т.д.
+    initGame(lang);
+});
+
+    const i18n = {
+        en: {
+            startGame: "Start Game",
+            level: "Level",
+            time: "Time",
+            rulesTitle: "Rules",
+            rulesContent: "Find all matching pairs before time runs out.",
+            restart: "Restart",
+            nextLevel: "Next Level",
+            prevLevel: "Previous Level"
+        },
+        ru: {
+            startGame: "Начать игру",
+            level: "Уровень",
+            time: "Время",
+            rulesTitle: "Правила",
+            rulesContent: "Найдите все пары карточек до окончания времени.",
+            restart: "Заново",
+            nextLevel: "Следующий уровень",
+            prevLevel: "Предыдущий уровень"
+        }
+    };
+
+    function initGame(lang = 'en') {
+        const t = i18n[lang] || i18n.en;
+
+        document.getElementById("startButton").textContent = t.startGame;
+        document.getElementById("restartButton").textContent = t.restart;
+        document.getElementById("prevLevelButton").textContent = t.prevLevel;
+        document.getElementById("nextLevelButton").textContent = t.nextLevel;
+
+        document.getElementById("rulesModal").querySelector("h2").textContent = t.rulesTitle;
+        document.getElementById("rulesModal").querySelector("p").textContent = t.rulesContent;
+    }
+    // двойной тап не приближает
+    document.addEventListener('dblclick', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    // Для iOS Safari
+        document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+
+
+
 </script>
 
     <style>
@@ -24,6 +77,27 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        * {
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none;    /* Firefox */
+            -ms-user-select: none;     /* IE/Edge */
+            user-select: none;         /* Standard */
+}
+
+        /* 2. HTML и BODY: убираем прокрутку, устанавливаем безопасные отступы */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            padding: env(safe-area-inset-top, 15px) env(safe-area-inset-right, 15px) env(safe-area-inset-bottom, 15px) env(safe-area-inset-left, 15px);
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
         }
 
         body {
@@ -38,6 +112,7 @@
             justify-content: center;
             color: white;
             padding: 15px;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes gradientShift {
@@ -65,33 +140,47 @@
             font-family: 'Seymour One', sans-serif;
             font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             word-break: break-word;
             padding: 0 1rem;
             text-align: center;
+            line-height: 1.2;
         }
 
+        .game-container {
+            padding: 15px;
+}
+
         .game-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 10px;
             font-family: 'Seymour One', sans-serif;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            
         }
 
         .level-display {
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            padding: 1rem 2rem;
+            padding: 0.6rem 1rem;
             border-radius: 25px;
             margin: 1rem 0;
             font-family: 'Seymour One', sans-serif;
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin: 0;
             font-weight: bold;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
 
         .game-board {
             display: grid;
-            gap: 1rem;
-            padding: 1rem;
+            gap: 0.5rem;
+            padding: 0.5rem;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
@@ -109,6 +198,7 @@
             display: block;
             margin: auto;
             pointer-events: none;
+            user-drag: none;
         }
 
         .card {
@@ -274,11 +364,11 @@
 
         .time-display {
             background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1rem;
             border-radius: 25px;
-            margin: 0.5rem 0;
+            margin: 0;
             font-family: 'Seymour One', sans-serif;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -293,6 +383,15 @@
         .grid-4 { grid-template-columns: repeat(4, 1fr); }
         .grid-5 { grid-template-columns: repeat(5, 1fr); }
         .grid-6 { grid-template-columns: repeat(6, 1fr); }
+
+        .grid-5 .card, .grid-6 .card {
+            width: 16vw;
+            height: 16vw;
+            max-width: 70px;
+            max-height: 70px;
+            min-width: 40px;
+            min-height: 40px;
+}
 
         @media (max-width: 768px) {
             .game-title { font-size: 2rem; }
@@ -323,6 +422,10 @@
         
 
         @media (max-width: 480px) {
+            .game-title {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
             .game-board {
                 padding: 0.8rem;
                 gap: 0.8rem;
@@ -339,6 +442,7 @@
                 flex-direction: column;
                 align-items: center;
                 gap: 0.7rem;
+                margin: 0.5rem 0;
             }
             .btn {
                 width: 100%;
@@ -364,7 +468,7 @@
 
         @media (max-width: 360px) {
             .game-title {
-                font-size: 1.8rem;
+                font-size: 1.3rem;
                 margin-bottom: 1rem;
             }
             .game-board {
@@ -401,21 +505,14 @@
         
     </style>
 </head>
-<body>
-
-   <div class="game-container">
-        <h1 class="game-title jelly-text">Найди Лабубу</h1>
-
-        <div class="game-info">
-            <div class="level-display">Уровень <span id="level">1</span> из 20</div>
-            <div class="time-display">Время: <span id="time-left">1:00</span></div>
-        </div>
-
+<body >
 
     <div class="game-container">
-        
+        <h1 class="game-title jelly-text">Найди пары Лабубу</h1>
 
         <div class="game-info">
+             <div class="level-display">Уровень <span id="level">1</span> из 20</div>
+            <div class="time-display">Время: <span id="time-left">1:00</span></div>
             
         </div>
 
@@ -504,6 +601,22 @@
                 document.body.removeChild(document.querySelector('.message-box-overlay'));
             }
             
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchstart', function (e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function(e) {
+                if (e.touches.length > 1) {
+                     e.preventDefault();
+                }
+            }, { passive: false });
+
             // Создаем overlay
             const overlay = document.createElement('div');
             overlay.className = 'message-box-overlay';
@@ -759,6 +872,8 @@
         }
 
         function goToNextLevel() {
+            console.log("goToNextLevel called at level:", currentLevel);
+
             if (currentLevel < 20) {
                 currentLevel++;
                 levelPassed = false;
@@ -771,6 +886,7 @@
                 startGame();
                 renderCards();
             } else {
+                console.log('Показываю сообщение о победе!');
                 showMessage(
                     '🎉 Победа!', 
                     'Вы прошли все 20 уровней! Поздравляем с победой!', 
@@ -865,6 +981,10 @@
                 updateDisplay();
             }
         });
+
+        document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+    });
     </script>
 </body>
 </html>
