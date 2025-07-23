@@ -18,6 +18,13 @@
         s.onload = initSDK;
         d.body.append(s);
     })(document);
+    
+    YaGames
+    .init()
+    .then(ysdk => {
+        console.log('Yandex SDK initialized');
+        window.ysdk = ysdk;
+    });
 
     YaGames.init().then(ysdk => {
     const lang = ysdk.environment.i18n.lang; // например, "ru", "en", "tr" и т.д.
