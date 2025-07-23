@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,105 +9,98 @@
     <title>Найди пары Лабубу</title>
 
     <!-- Yandex Games SDK -->
-<script>
-    (function(d) {
-        var s = d.createElement('script');
-        s.src = '/sdk.js';
-        s.async = true;
-        s.onload = initSDK;
-        d.body.append(s);
-    })(document);
-    
-    YaGames
-    .init()
-    .then(ysdk => {
-        console.log('Yandex SDK initialized');
-        window.ysdk = ysdk;
-    });
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+    <script>
+         // Инициализация SDK Яндекс Игр
+        let ysdk;
+        YaGames.init()
+            .then(sdk => {
+                ysdk = sdk;
+                console.log('Yandex SDK initialized');
+                window.ysdk = ysdk;
+                
+                // Определяем язык и инициализируем игру
+                const lang = ysdk.environment.i18n.lang || 'ru';
+                initGame(lang);
+                
+                // Сообщаем платформе, что игра загрузилась
+                if (ysdk.features?.LoadingAPI?.ready) {
+                    ysdk.features.LoadingAPI.ready();
+                }
+            })
+            .catch(err => {
+                console.error('Failed to initialize Yandex SDK:', err);
+                // Fallback инициализация
+                initGame('ru');
+            });
 
-    YaGames.init().then(ysdk => {
-    const lang = ysdk.environment.i18n.lang; // например, "ru", "en", "tr" и т.д.
-    initGame(lang);
-});
+        const i18n = {
+            en: {
+                startGame: "Start Game",
+                level: "Level",
+                time: "Time",
+                rulesTitle: "Rules",
+                rulesContent: "Find all matching pairs before time runs out.",
+                restart: "Restart",
+                nextLevel: "Next Level",
+                prevLevel: "Previous Level"
+            },
+            ru: {
+                startGame: "Начать игру",
+                level: "Уровень",
+                time: "Время",
+                rulesTitle: "Правила",
+                rulesContent: "Найдите все пары карточек до окончания времени.",
+                restart: "Заново",
+                nextLevel: "Следующий уровень",
+                prevLevel: "Прошлый уровеь"
+            }
+        };
 
-    const i18n = {
-        en: {
-            startGame: "Start Game",
-            level: "Level",
-            time: "Time",
-            rulesTitle: "Rules",
-            rulesContent: "Find all matching pairs before time runs out.",
-            restart: "Restart",
-            nextLevel: "Next Level",
-            prevLevel: "Previous Level"
-        },
-        ru: {
-            startGame: "Начать игру",
-            level: "Уровень",
-            time: "Время",
-            rulesTitle: "Правила",
-            rulesContent: "Найдите все пары карточек до окончания времени.",
-            restart: "Заново",
-            nextLevel: "Следующий уровень",
-            prevLevel: "Предыдущий уровень"
+        function initGame(lang = 'ru') {
+            const t = i18n[lang] || i18n.ru;
+
+            document.getElementById("startButton").textContent = t.startGame;
+            document.getElementById("restartButton").textContent = t.restart;
+            document.getElementById("prevLevelButton").textContent = t.prevLevel;
+            document.getElementById("nextLevelButton").textContent = t.nextLevel;
+
+            document.getElementById("rulesModal").querySelector("h2").textContent = t.rulesTitle;
+            document.getElementById("rulesModal").querySelector("p").textContent = t.rulesContent;
         }
-    };
+        
+        // Блокировка масштабирования и выделения
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
 
-    function initGame(lang = 'en') {
-        const t = i18n[lang] || i18n.en;
-
-        document.getElementById("startButton").textContent = t.startGame;
-        document.getElementById("restartButton").textContent = t.restart;
-        document.getElementById("prevLevelButton").textContent = t.prevLevel;
-        document.getElementById("nextLevelButton").textContent = t.nextLevel;
-
-        document.getElementById("rulesModal").querySelector("h2").textContent = t.rulesTitle;
-        document.getElementById("rulesModal").querySelector("p").textContent = t.rulesContent;
-    }
-    // двойной тап не приближает
-    document.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-
-    // Для iOS Safari
         document.addEventListener('gesturestart', function(e) {
-        e.preventDefault();
-    });
-
-
-
-</script>
+            e.preventDefault();
+        });
+    </script>
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        *, *::before, *::after {
-            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
-        * {
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none;    /* Firefox */
-            -ms-user-select: none;     /* IE/Edge */
-            user-select: none;         /* Standard */
-}
-
-        /* 2. HTML и BODY: убираем прокрутку, устанавливаем безопасные отступы */
         html, body {
             width: 100%;
             height: 100%;
             margin: 0;
             overflow: hidden;
             padding: env(safe-area-inset-top, 15px) env(safe-area-inset-right, 15px) env(safe-area-inset-bottom, 15px) env(safe-area-inset-left, 15px);
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Seymour One', sans-serif;
+            -webkit-overflow-scrolling: touch;
         }
 
         body {
-            font-family: 'Seymour One', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
@@ -119,7 +111,6 @@
             justify-content: center;
             color: white;
             padding: 15px;
-            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes gradientShift {
@@ -144,7 +135,6 @@
         }
 
         .game-title {
-            font-family: 'Seymour One', sans-serif;
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 1rem;
@@ -156,7 +146,9 @@
 
         .game-container {
             padding: 15px;
-}
+            width: 100%;
+            max-width: 600px;
+        }
 
         .game-info {
             display: flex;
@@ -166,22 +158,21 @@
             flex-wrap: wrap;
             gap: 20px;
             padding: 10px;
-            font-family: 'Seymour One', sans-serif;
             text-align: center;
             margin-bottom: 1rem;
-            
         }
 
-        .level-display {
+        .level-display, .time-display {
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
             padding: 0.6rem 1rem;
             border-radius: 25px;
-            margin: 1rem 0;
-            font-family: 'Seymour One', sans-serif;
             font-size: clamp(0.9rem, 3vw, 1.2rem);
-            margin: 0;
             font-weight: bold;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .time-display {
+            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
         }
 
         .game-board {
@@ -196,16 +187,6 @@
             width: fit-content;
             max-width: 100%;
             justify-content: center;
-        }
-
-        .card img {
-            width: 90%;
-            height: 90%;
-            object-fit: contain;
-            display: block;
-            margin: auto;
-            pointer-events: none;
-            user-drag: none;
         }
 
         .card {
@@ -233,11 +214,18 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
+        .card img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+            display: block;
+            margin: auto;
+            pointer-events: none;
+            user-drag: none;
+        }
+
         .card.flipped {
             background: white;
-            color: #333;
-            font-family: 'Seymour One', sans-serif;
-            font-size: 2rem;
         }
 
         .card.matched {
@@ -251,7 +239,6 @@
         }
 
         .card-back {
-            font-family: 'Seymour One', sans-serif;
             font-size: 1.5rem;
             color: white;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -266,7 +253,6 @@
             width: 100%;
             max-width: 500px;
             padding: 0 1rem;
-            box-sizing: border-box;
         }
 
         .btn {
@@ -283,25 +269,13 @@
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            min-width: 0; /* Увеличена минимальная ширина */
+            min-width: 0;
             max-width: 100%;
-            box-sizing: border-box;
             white-space: nowrap;
-            overflow: visible; /* Изменено с hidden на visible */
-            text-overflow: clip; /* Изменено с ellipsis на clip */
-            flex-shrink: 0;
-            line-height: 1.2; /* Добавлено для лучшего отображения текста */
+            line-height: 1.2;
         }
-
-        .btn-prev-level {
-            min-width: 160px; /* Еще больше места для текста */
-            padding: 0.6rem 0.8rem; /* Оптимальные отступы */
-        }
-
-
 
         .btn:hover {
             transform: translateY(-2px);
@@ -322,10 +296,6 @@
             z-index: 1000;
             width: 90vw;
             max-width: 400px;
-            box-sizing: border-box;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            overflow: hidden;
             animation: messageAppear 0.5s ease-out;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -354,36 +324,12 @@
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            word-break: break-word;
-            padding: 0 0.5rem;
         }
 
         .message-box p {
             font-size: 1.1rem;
             margin: 0.8rem 0;
             line-height: 1.4;
-            word-break: break-word;
-            padding: 0 0.5rem;
-        }
-
-        .message-box .btn {
-            margin-top: 1rem;
-        }
-
-        .time-display {
-            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-            padding: 0.6rem 1rem;
-            border-radius: 25px;
-            margin: 0;
-            font-family: 'Seymour One', sans-serif;
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .time-display span {
-            color: #ffeb3b;
-            font-size: 1.2rem;
         }
 
         .grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -399,10 +345,10 @@
             max-height: 70px;
             min-width: 40px;
             min-height: 40px;
-}
+        }
 
         @media (max-width: 768px) {
-            .game-title { font-size: 2rem; }
+            .game-title { font-size: 1.8rem; }
             .card {
                 width: 18vw;
                 height: 18vw;
@@ -412,12 +358,7 @@
             .btn {
                 font-size: 0.85rem;
                 padding: 0.5rem 0.8rem;
-                min-width: 130px;
             }
-            .btn-prev-level {
-                min-width: 140px;
-            }
-        }
             .message-box {
                 padding: 1.2rem;
             }
@@ -427,7 +368,7 @@
             .message-box p {
                 font-size: 1rem;
             }
-        
+        }
 
         @media (max-width: 480px) {
             .game-title {
@@ -457,11 +398,6 @@
                 max-width: 220px;
                 font-size: 0.85rem;
             }
-            .btn-prev-level {
-                min-width: 100%;
-            }
-        }
-        
             .message-box {
                 padding: 1rem;
                 width: 95vw;
@@ -472,12 +408,11 @@
             .message-box p {
                 font-size: 0.9rem;
             }
-        
+        }
 
         @media (max-width: 360px) {
             .game-title {
                 font-size: 1.3rem;
-                margin-bottom: 1rem;
             }
             .game-board {
                 padding: 0.6rem;
@@ -493,13 +428,7 @@
             }
             .btn {
                 font-size: 12px;
-                min-width: 100px;
                 padding: 0.5rem 0.7rem;
-            }
-            .btn-prev-level {
-                font-size: 0.75rem;
-                min-width: 100%;
-            }
             }
             .message-box {
                 padding: 0.8rem;
@@ -510,24 +439,22 @@
             .message-box p {
                 font-size: 0.85rem;
             }
-        
+        }
     </style>
 </head>
-<body >
-
+<body>
     <div class="game-container">
         <h1 class="game-title jelly-text">Найди пары Лабубу</h1>
 
         <div class="game-info">
-             <div class="level-display">Уровень <span id="level">1</span> из 20</div>
+            <div class="level-display">Уровень <span id="level">1</span> из 20</div>
             <div class="time-display">Время: <span id="time-left">1:00</span></div>
-            
         </div>
 
-         <div class="controls">
-            <button class="btn" onclick="startGame()">Начать игру</button>
-            <button class="btn" onclick="previousLevel()">Прошлый уровень</button>
-            <button class="btn" onclick="restartLevel()">Заново</button>
+        <div class="controls">
+            <button id="startButton" class="btn" onclick="startGame()">Начать игру и </button>
+            <button id="prevLevelButton" class="btn" onclick="previousLevel()">Прошлый уровень</button>
+            <button id="restartButton" class="btn" onclick="restartLevel()">Заново</button>
         </div>
 
         <div id="gameBoard" class="game-board"></div>
@@ -535,14 +462,10 @@
 
     <div id="rulesModal" class="message-box" style="display: block;">
         <h2>Правила игры</h2>
-        <p>Добро пожаловать в игру "Найди пары Лабубу"!</p>
-        <p>1. Нажмите "Начать игру" чтобы стартовать</p>
-        <p>2. Открывайте по две карточки за ход</p>
-        <p>3. Если карточки совпадают - они остаются открытыми</p>
-        <p>4. Найди все пары до истечения времени</p>
-        <p>5. Каждый уровень сложнее предыдущего</p>
-        <p>6. Используй кнопки для навигации по уровням</p>
-        <p>7. Переход к следующему уровню возможен только при прохождении уровня, на котором вы находитесь</p>
+        <p>1. Найди все парные карточки</p>
+        <p>2. Открывай по две за ход</p>
+        <p>3. Успей до конца времени</p>
+        <p>4. С каждым уровнем сложнее!</p>
         <button class="btn" onclick="hideRules()">Начать игру</button>
     </div>
     <div id="rulesModalOverlay" class="message-box-overlay" style="display: block;"></div>
@@ -558,6 +481,7 @@
         let matchedPairs = 0;
         let levelPassed = false;
         let activeMessageBox = null;
+        let gameplayStarted = false;
 
         // Локальные изображения из папки images
         const characters = [
@@ -600,41 +524,44 @@
         function hideRules() {
             document.getElementById('rulesModal').style.display = 'none';
             document.getElementById('rulesModalOverlay').style.display = 'none';
+            notifyGameReady();
+        }
+
+        function notifyGameReady() {
+            if (window.ysdk?.features?.LoadingAPI?.ready) {
+                ysdk.features.LoadingAPI.ready();
+            }
+        }
+
+        function startGameplay() {
+            if (window.ysdk?.features?.GameplayAPI?.start) {
+                ysdk.features.GameplayAPI.start();
+                gameplayStarted = true;
+            }
+        }
+
+        function stopGameplay() {
+            if (gameplayStarted && window.ysdk?.features?.GameplayAPI?.stop) {
+                ysdk.features.GameplayAPI.stop();
+                gameplayStarted = false;
+            }
         }
 
         function showMessage(title, text, buttonText, buttonAction) {
-            // Закрываем предыдущее сообщение, если оно есть
             if (activeMessageBox) {
                 document.body.removeChild(activeMessageBox);
                 document.body.removeChild(document.querySelector('.message-box-overlay'));
             }
             
-            document.addEventListener('contextmenu', function (e) {
-                e.preventDefault();
-            });
+            stopGameplay();
 
-            document.addEventListener('touchstart', function (e) {
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            document.addEventListener('touchmove', function(e) {
-                if (e.touches.length > 1) {
-                     e.preventDefault();
-                }
-            }, { passive: false });
-
-            // Создаем overlay
             const overlay = document.createElement('div');
             overlay.className = 'message-box-overlay';
             document.body.appendChild(overlay);
             
-            // Создаем само сообщение
             const messageBox = document.createElement('div');
             messageBox.className = 'message-box';
             
-            // Создаем кнопку только если есть buttonText
             let buttonHTML = '';
             if (buttonText) {
                 buttonHTML = `<button class="btn" id="messageBoxButton">${buttonText}</button>`;
@@ -649,30 +576,31 @@
             document.body.appendChild(messageBox);
             activeMessageBox = messageBox;
             
-            // Добавляем обработчик для кнопки
             if (buttonText) {
                 const button = document.getElementById('messageBoxButton');
                 button.onclick = function() {
-                    // Удаляем сообщение и overlay
                     document.body.removeChild(messageBox);
                     document.body.removeChild(overlay);
                     activeMessageBox = null;
                     
-                    // Выполняем переданное действие
                     if (buttonAction === 'restartLevel') {
                         restartLevel();
                     } else if (buttonAction === 'saveProgress') {
                         saveProgress();
+                    } else if (buttonAction === 'goToNextLevel') {
+                        goToNextLevel();
                     }
+                    
+                    startGameplay();
                 };
             } else {
-                // Автоматическое закрытие через 2 секунды если нет кнопки
                 setTimeout(() => {
                     if (messageBox.parentNode) {
                         document.body.removeChild(messageBox);
                         document.body.removeChild(overlay);
                         activeMessageBox = null;
                     }
+                    startGameplay();
                 }, 2000);
             }
         }
@@ -737,6 +665,7 @@
                     renderCards();
                     updateDisplay();
                     saveProgress();
+                    startGameplay();
                 }
                 return;
             }
@@ -751,6 +680,7 @@
             renderCards();
             updateDisplay();
             saveProgress();
+            startGameplay();
         }
 
         function startLevelTimer() {
@@ -771,6 +701,7 @@
         function timeUp() {
             clearInterval(timer);
             gameActive = false;
+            stopGameplay();
             showMessage(
                 '⏰ Время вышло!', 
                 `Уровень ${currentLevel} не пройден! Попробуйте еще раз.`, 
@@ -811,7 +742,7 @@
                 const cardElement = document.createElement('div');
                 cardElement.className = 'card ' + (card.flipped ? 'flipped' : '') + (card.matched ? ' matched' : '');
                 cardElement.onclick = () => {
-                    if (!activeMessageBox) { // Блокируем клики, если есть активное сообщение
+                    if (!activeMessageBox) {
                         flipCard(index);
                     }
                 };
@@ -868,20 +799,17 @@
             gameActive = false;
             clearInterval(timer);
             levelPassed = true;
+            stopGameplay();
             
             showMessage(
                 '🎉 Уровень пройден!', 
                 `Поздравляем! Вы прошли уровень ${currentLevel}!`, 
                 'ДАЛЬШЕ', 
-                'goToNextLevel' // Изменено с saveProgress на goToNextLevel
+                'goToNextLevel'
             );
-            
-            goToNextLevel();
         }
 
         function goToNextLevel() {
-            console.log("goToNextLevel called at level:", currentLevel);
-
             if (currentLevel < 20) {
                 currentLevel++;
                 levelPassed = false;
@@ -894,7 +822,6 @@
                 startGame();
                 renderCards();
             } else {
-                console.log('Показываю сообщение о победе!');
                 showMessage(
                     '🎉 Победа!', 
                     'Вы прошли все 20 уровней! Поздравляем с победой!', 
@@ -919,7 +846,7 @@
         function previousLevel() {
             if (currentLevel > 1) {
                 currentLevel--;
-                levelPassed = true; // Разрешаем переход без прохождения
+                levelPassed = true;
                 timeElapsed = 0;
                 cards = [];
                 flippedCards = [];
@@ -928,38 +855,6 @@
                 updateDisplay();
                 startGame();
                 renderCards();
-            }
-        }
-
-        function nextLevel() {
-            if (!levelPassed) {
-                showMessage(
-                    '⚠️ Сначала пройди уровень!', 
-                    'Нужно завершить текущий уровень перед переходом на следующий.', 
-                    'Понятно', 
-                    ''
-                );
-                return;
-            }
-            
-            if (currentLevel < 20) {
-                currentLevel++;
-                levelPassed = false;
-                timeElapsed = 0;
-                cards = [];
-                flippedCards = [];
-                matchedPairs = 0;
-                saveProgress();
-                updateDisplay();
-                startGame();
-                renderCards();
-            } else {
-                showMessage(
-                    '🎉 Победа!', 
-                    'Вы прошли все 20 уровней! Поздравляем с победой!', 
-                    'Ура!', 
-                    ''
-                );
             }
         }
 
@@ -983,16 +878,18 @@
                 if (gameActive) {
                     clearInterval(timer);
                     startLevelTimer();
+                    startGameplay();
                 }
             } else {
                 document.getElementById('gameBoard').innerHTML = '';
                 updateDisplay();
             }
+            
+            // Блокировка контекстного меню
+            document.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
         });
-
-        document.addEventListener('contextmenu', function(event) {
-    event.preventDefault();
-    });
     </script>
 </body>
 </html>
